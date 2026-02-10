@@ -1,10 +1,14 @@
 from collections.abc import AsyncGenerator
 import anthropic
+from fastapi import Depends
+from app.infrastructure.anthropic_client import get_anthropic_client
 from app.utils.anthropic_stream_parser import ClaudeStreamParser
 
 
 class LLMStreamService:
-    def __init__(self, client: anthropic.AsyncAnthropic) -> None:
+    def __init__(
+        self, client: anthropic.AsyncAnthropic = Depends(get_anthropic_client)
+    ) -> None:
         self.client = client
 
     async def stream_completation(
