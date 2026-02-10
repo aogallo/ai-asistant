@@ -24,4 +24,4 @@ async def summarize(
     prompt = build_summary_prompt(request.text)
     summary = await llm.summarize(prompt)
 
-    return SummarizeResponse(summary=summary)
+    return SummarizeResponse(text=summary)
