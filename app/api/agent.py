@@ -3,7 +3,6 @@ from fastapi.responses import StreamingResponse
 
 from app.agents.agent_loop import ClaudeAgentLoop
 
-
 router = APIRouter()
 
 

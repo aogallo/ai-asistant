@@ -1,10 +1,11 @@
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
+
 import anthropic
 from fastapi import Depends
 
+from app.agents.tool_setup import registry
 from app.infrastructure.anthropic_client import get_anthropic_client
 from app.utils.anthropic_stream_parser import ClaudeStreamParser
-from app.agents.tool_setup import registry
 
 
 class ClaudeAgentLoop:
