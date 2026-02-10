@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 
-app = FastAPI()
+from app.api.routes import router
 
+app = FastAPI(title="AI FastAPI Template")
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+app.include_router(router)
