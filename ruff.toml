@@ -9,3 +9,5 @@ select = [
     "B",  # bugbear
     "UP", # pyupgrade
 ]
+ignore = ["B008"]
+
