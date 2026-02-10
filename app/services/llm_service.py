@@ -1,5 +1,5 @@
 import anthropic
-from anthropic.types import Message
+from anthropic.types import Message, TextBlock
 
 from app.core.config import settings
 from app.core.logging import logger
@@ -11,6 +11,13 @@ class LLMService:
             api_key=settings.anthropic_api_key
         )
 
+    def extract_text(self, response: Message):
+        return "\n".join(
+            block.text
+            for block in response.content
+            if isinstance(block, TextBlock)
+        )
+
     async def summarize(self, prompt: str) -> str:
         try:
             response: Message = await self.client.messages.create(
@@ -20,9 +27,9 @@ class LLMService:
                 messages=[{"role": "user", "content": prompt}],
             )
 
-            message = response.content[0]
+            message = extract_text(response)
 
-            return message.text
+            return message
 
         except Exception as e:
             logger.error("llm_error", error=str(e))
