@@ -16,7 +16,7 @@ class LLMStreamService:
     ) -> AsyncGenerator[str, None]:
         parser = ClaudeStreamParser
 
-        async with self.client.message.create(
+        async with self.client.messages.create(
             model="claude-opus-4-6",
             max_tokens=1024,
             temperature=0.2,

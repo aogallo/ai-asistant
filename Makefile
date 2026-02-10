@@ -5,7 +5,7 @@ lint:
 	ruff check .
 
 format:
-	ruff format .
+	ruff format . --fix
 
 type:
 	mypy app

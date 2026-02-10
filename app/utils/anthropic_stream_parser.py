@@ -24,7 +24,7 @@ class ClaudeStreamParser:
 
         # --- TOOL TO CALL ---
         if event.type == "content_block_start":
-            block = event.content_block_start
+            block = event.content_block
 
             if block.type == "tool_use":
                 self.result.tool_call = {
