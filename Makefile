@@ -2,10 +2,10 @@ run:
 	uv run uvicorn app.main:app --reload
 
 lint:
-	ruff check .
+	ruff check --fix .
 
 format:
-	ruff format .
+	ruff format . 
 
 type:
 	mypy app

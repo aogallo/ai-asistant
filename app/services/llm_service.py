@@ -11,7 +11,7 @@ class LLMService:
             api_key=settings.anthropic_api_key
         )
 
-    def extract_text(self, response: Message):
+    def process_text(self, response: Message):
         return "\n".join(
             block.text
             for block in response.content
@@ -27,7 +27,7 @@ class LLMService:
                 messages=[{"role": "user", "content": prompt}],
             )
 
-            message = extract_text(response)
+            message = self.process_text(response)
 
             return message
 

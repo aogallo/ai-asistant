@@ -1,10 +1,12 @@
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
+from typing import Any
+
 import anthropic
 from fastapi import Depends
 
+from app.agents.tool_setup import registry
 from app.infrastructure.anthropic_client import get_anthropic_client
 from app.utils.anthropic_stream_parser import ClaudeStreamParser
-from app.agents.tool_setup import registry
 
 
 class ClaudeAgentLoop:
@@ -14,13 +16,14 @@ class ClaudeAgentLoop:
         self.client = client
 
     async def run(self, prompt: str) -> AsyncGenerator[str, None]:
+        messages: list[dict[str, Any]] = [{"role": "user", "content": prompt}]
+
         while True:
-            messages = [{"role": "user", "content": prompt}]
             parser = ClaudeStreamParser()
 
             async with self.client.messages.stream(
                 max_tokens=1024,
-                messages=[{"role": "user", "content": prompt}],
+                messages=messages,
                 model="claude-opus-4-6",
             ) as stream:
                 tool_call_detected = None

@@ -1,6 +1,8 @@
 from collections.abc import AsyncGenerator
+
 import anthropic
 from fastapi import Depends
+
 from app.infrastructure.anthropic_client import get_anthropic_client
 from app.utils.anthropic_stream_parser import ClaudeStreamParser
 
@@ -16,7 +18,7 @@ class LLMStreamService:
     ) -> AsyncGenerator[str, None]:
         parser = ClaudeStreamParser
 
-        async with self.client.message.create(
+        async with self.client.messages.create(
             model="claude-opus-4-6",
             max_tokens=1024,
             temperature=0.2,

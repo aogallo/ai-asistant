@@ -3,11 +3,10 @@ from fastapi.responses import StreamingResponse
 
 from app.agents.agent_loop import ClaudeAgentLoop
 
-
 router = APIRouter()
 
 
-@router.post("/agent/stream")
+@router.post("/agent/stream", response_model=None)
 async def stream_agent(prompt: str, agent: ClaudeAgentLoop = Depends()):
     async def generator():
         async for chunk in agent.run(prompt):
