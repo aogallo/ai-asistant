@@ -1,4 +1,5 @@
 from collections.abc import AsyncGenerator
+from typing import Any
 
 import anthropic
 from fastapi import Depends
@@ -15,13 +16,14 @@ class ClaudeAgentLoop:
         self.client = client
 
     async def run(self, prompt: str) -> AsyncGenerator[str, None]:
+        messages: list[dict[str, Any]] = [{"role": "user", "content": prompt}]
+
         while True:
-            messages = [{"role": "user", "content": prompt}]
             parser = ClaudeStreamParser()
 
             async with self.client.messages.stream(
                 max_tokens=1024,
-                messages=[{"role": "user", "content": prompt}],
+                messages=messages,
                 model="claude-opus-4-6",
             ) as stream:
                 tool_call_detected = None
