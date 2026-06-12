@@ -1,0 +1,109 @@
+schema: spec-driven
+project: ai-asistant
+persistence:
+  mode: openspec
+  initialized: 2026-06-08
+
+context: |
+  Tech stack: Python 3.12 FastAPI application using Anthropic SDK, Pydantic v2, SQLModel/SQLAlchemy asyncio, asyncpg/psycopg, pandas, pypdf, and uvicorn.
+  Architecture: Layered FastAPI architecture: API routers -> services -> infrastructure, with schemas/models/core/utils and an agent tool registry loop.
+  Testing: pytest with pytest-asyncio; HTTP integration tests use FastAPI TestClient and httpx ASGITransport; repository tests use aiosqlite in-memory database fixtures.
+  Style: Ruff line length 80, pycodestyle/pyflakes/isort/bugbear/pyupgrade rules, MyPy strict with Pydantic plugin, conventional commits on develop.
+
+decisions:
+  execution_mode: interactive
+  artifact_store:
+    mode: openspec
+  chained_pr_strategy: ask-always
+  review_budget_lines: 400
+
+strict_tdd: true
+
+testing:
+  strict_tdd: true
+  strict_tdd_source: test-runner-fallback
+  detected: 2026-06-08
+  runner:
+    available: true
+    framework: pytest + pytest-asyncio
+    command: PYTHONPATH=. uv run pytest
+    configured_command: make test
+    notes:
+      - make test runs plain pytest and may require an activated environment plus PYTHONPATH including the project root.
+      - uv run pytest initially failed to import app without PYTHONPATH.
+      - PYTHONPATH=. uv run pytest reached settings validation and requires ANTHROPIC_API_KEY and DATABASE_URL or test-safe defaults.
+  layers:
+    unit:
+      available: true
+      tool: pytest
+      evidence:
+        - tests/test_invoice_models.py
+        - tests/test_invoice_service.py
+    integration:
+      available: true
+      tool: pytest + httpx ASGITransport + FastAPI TestClient + aiosqlite
+      evidence:
+        - tests/conftest.py
+        - tests/test_health.py
+        - tests/test_invoice_upload.py
+        - tests/test_repositories.py
+    e2e:
+      available: false
+      tool: null
+      evidence: []
+  coverage:
+    available: true
+    tool: pytest-cov
+    command: PYTHONPATH=. uv run pytest --cov=app
+    configured_command: null
+  quality:
+    linter:
+      available: true
+      tool: ruff
+      command: make lint
+      verified: false
+      notes:
+        - uv run ruff check . failed because ruff is not declared in project dependencies or dev dependency-groups.
+    type_checker:
+      available: true
+      tool: mypy strict + pydantic.mypy
+      command: make type
+      verified: false
+      notes:
+        - uv run mypy app failed because mypy is not declared in project dependencies or dev dependency-groups.
+    formatter:
+      available: true
+      tool: ruff format
+      command: make format
+
+rules:
+  proposal:
+    - Keep proposals focused on one reviewable change.
+    - Include rollback plan for risky API, persistence, or external-service changes.
+    - Respect review_budget_lines: 400 and ask before choosing a chained PR strategy.
+  specs:
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY).
+    - Use Given/When/Then for scenarios.
+    - Keep generated technical artifacts in English.
+  design:
+    - Follow the existing layered architecture: API -> services -> infrastructure.
+    - Document dependencies on Anthropic, database access, file parsing, and streaming behavior explicitly.
+    - Prefer async-first designs consistent with existing FastAPI services.
+  tasks:
+    - Group tasks by phase and keep each task completable in one session.
+    - Keep tests with the task they verify.
+    - Flag changes likely to exceed 400 changed lines before implementation.
+  apply:
+    - Follow existing code patterns and FastAPI dependency-injection conventions.
+    - Run RED-GREEN-REFACTOR unless the user explicitly disables Strict TDD.
+    tdd: true
+    test_command: PYTHONPATH=. uv run pytest
+  verify:
+    test_command: PYTHONPATH=. uv run pytest
+    build_command: uv run mypy app
+    coverage_threshold: 0
+    notes:
+      - Verification currently requires environment variables for settings and missing dev tools to be installed or declared.
+  archive:
+    - Warn before merging destructive deltas.
+    - Archive completed changes under openspec/changes/archive/YYYY-MM-DD-{change-name}/.
