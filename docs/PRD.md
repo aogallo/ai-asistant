@@ -32,6 +32,7 @@ service, not yet a multi-user RAG SaaS.
 | Invoice document storage | Original uploads are stored durably and linked to parsed records. | **Proposed** — no object storage contract is implemented. |
 | Invoice RAG | Users ask questions over their invoice corpus and receive grounded answers with citations. | **Proposed** — no embeddings, vector index, retriever, or citation pipeline exists. |
 | Conversation history | Invoice Q&A sessions preserve context while respecting tenant boundaries. | **Proposed** — current chat is generic prompt streaming. |
+| Configurable AI providers | Tenants can choose the AI provider used for summaries, chat, and future RAG generation, including using their own paid provider subscription when supported. | **Proposed** — current AI integration is Anthropic-specific. |
 | Admin operations | Operators can inspect ingestion health, retrieval quality, and failed jobs. | **Proposed** — no admin surface is implemented. |
 
 ## Target users
@@ -62,11 +63,20 @@ service, not yet a multi-user RAG SaaS.
 - Proposed answers SHOULD cite source invoices or uploaded documents.
 - Proposed retrieval SHOULD separate parsed structured invoice facts from raw
   document text when both become available.
+- Proposed AI features SHOULD be provider-agnostic so the system can support
+  Anthropic, OpenAI, Google, or another compatible provider without changing
+  invoice-domain behavior.
+- Proposed tenant settings SHOULD allow a user or tenant to select a supported
+  AI provider and, where appropriate, use their own provider subscription or API
+  credentials.
+- Proposed provider switching MUST preserve tenant isolation, auditability, and
+  answer-grounding requirements.
 
 ## Non-goals
 
 - This documentation change does not add authentication, tenancy, migrations,
-  object storage, embeddings, vector search, invoice chat, or RAG retrieval.
+  object storage, embeddings, vector search, invoice chat, RAG retrieval, or
+  multi-provider AI configuration.
 - This documentation change does not alter application code or runtime behavior.
 - Current invoice upload must not be treated as production-grade SaaS isolation.
 
